@@ -1,7 +1,7 @@
 name: open_design
 title: OpenDesign
 description: Design with OpenDesign systems and templates, then preview and export interactive prototypes inside Agent Zero.
-version: 1.0.0
+version: 1.0.1
 settings_sections: []
 per_project_config: false
 per_agent_config: false

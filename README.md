@@ -2,7 +2,7 @@
 
 Design systems, templates, interactive previews and HTML export in Agent Zero.
 
-Open **OpenDesign** from the sidebar or canvas. Choose a template and design system, enter a title and brief, and select **Create design**. Agent Zero creates the design in a new chat using your selected model. Saved results appear under **My designs**; select **Refresh** after the agent saves a revision.
+Open **OpenDesign** from the right canvas rail. Choose a template and design system, enter a title and brief, and select **Create design**. Agent Zero creates the design in a new chat using your selected model. Saved results appear under **My designs**; select **Refresh** after the agent saves a revision.
 
 ![OpenDesign studio](docs/studio.png)
 
