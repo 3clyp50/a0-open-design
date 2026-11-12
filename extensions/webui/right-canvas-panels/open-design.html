@@ -1,0 +1,9 @@
+<div x-data>
+<div class="right-canvas-surface-panel" data-surface-id="open_design"
+     :class="{'is-active': $store.rightCanvas?.isSurfaceVisible('open_design'), 'is-mounted': $store.rightCanvas?.isSurfaceRendered('open_design')}"
+     :aria-hidden="(!$store.rightCanvas?.isSurfaceVisible('open_design')).toString()" style="overflow:auto">
+  <template x-if="$store.rightCanvas?.isSurfaceRendered('open_design')">
+    <x-component path="/plugins/open_design/webui/main.html" mode="canvas"></x-component>
+  </template>
+</div>
+</div>

@@ -1,0 +1,60 @@
+<html data-surface-id="open_design" data-surface-modal-path="/plugins/open_design/webui/main.html" data-surface-dock-title="Dock OpenDesign" data-surface-dock-icon="dock_to_right">
+<head>
+  <title>OpenDesign</title>
+  <script type="module" src="/plugins/open_design/webui/studio-store.js"></script>
+  <link rel="stylesheet" href="/plugins/open_design/webui/studio.css">
+</head>
+<body>
+<div x-data>
+<template x-if="$store.openDesign">
+<section class="od-studio" x-init="$store.openDesign.refresh()" x-destroy="$store.openDesign.cleanup()" :aria-busy="$store.openDesign.busy">
+  <header class="od-head">
+    <div class="od-brand"><x-icon name="draw" aria-hidden="true"></x-icon><strong>OpenDesign</strong></div>
+    <button class="od-icon" @click="$store.openDesign.refresh()" :disabled="$store.openDesign.busy" aria-label="Refresh designs"><x-icon name="refresh"></x-icon></button>
+  </header>
+  <nav class="od-tabs" aria-label="Design views">
+    <button @click="$store.openDesign.tab = 'new'" :aria-pressed="$store.openDesign.tab === 'new'"><x-icon name="add"></x-icon>New design</button>
+    <button @click="$store.openDesign.tab = 'library'" :aria-pressed="$store.openDesign.tab === 'library'"><x-icon name="grid_view"></x-icon>My designs<span class="od-count" x-text="$store.openDesign.projects.length"></span></button>
+    <button x-show="$store.openDesign.current" @click="$store.openDesign.tab = 'preview'" :aria-pressed="$store.openDesign.tab === 'preview'"><x-icon name="web_asset"></x-icon>Preview</button>
+  </nav>
+  <div class="od-body" x-show="$store.openDesign.tab === 'new'">
+    <form class="od-form" @submit.prevent="$store.openDesign.create()">
+      <div class="od-brief">
+        <label class="od-field">Title<input x-model="$store.openDesign.title" maxlength="100" required autocomplete="off"></label>
+        <label class="od-field">Brief<textarea x-model="$store.openDesign.brief" rows="5" maxlength="12000" required></textarea></label>
+        <label class="od-field">Template<select x-model="$store.openDesign.template"><template x-for="item in $store.openDesign.templates" :key="item.id"><option :value="item.id" :selected="$store.openDesign.template === item.id" x-text="item.name"></option></template></select></label>
+      </div>
+      <fieldset class="od-systems">
+        <legend>Design system</legend>
+        <label class="od-search"><x-icon name="search" aria-hidden="true"></x-icon><input x-model="$store.openDesign.search" type="search" aria-label="Search design systems"></label>
+        <div class="od-system-grid">
+          <template x-for="item in $store.openDesign.filteredSystems" :key="item.id">
+            <button type="button" class="od-system" :aria-pressed="$store.openDesign.system === item.id" @click="$store.openDesign.system = item.id">
+              <span class="od-palette" aria-hidden="true"><template x-for="color in item.colors" :key="color"><i :style="{ backgroundColor: color }"></i></template></span>
+              <span class="od-system-name"><span x-text="item.name"></span><x-icon x-show="$store.openDesign.system === item.id" name="check" aria-label="Selected"></x-icon></span>
+            </button>
+          </template>
+        </div>
+      </fieldset>
+      <footer class="od-actions"><span role="status" x-show="!$store.openDesign.ready" x-text="$store.openDesign.busy ? 'Loading…' : 'Library unavailable'"></span><button class="od-primary" type="submit" :disabled="!$store.openDesign.canCreate"><x-icon name="auto_awesome" aria-hidden="true"></x-icon>Create design</button></footer>
+    </form>
+  </div>
+  <div class="od-body" x-show="$store.openDesign.tab === 'library'">
+    <div class="od-empty" x-show="!$store.openDesign.projects.length"><x-icon name="draw" aria-hidden="true"></x-icon><button class="od-primary" @click="$store.openDesign.tab = 'new'">New design</button></div>
+    <div class="od-projects"><template x-for="project in $store.openDesign.projects" :key="project.id">
+      <button class="od-project" @click="$store.openDesign.view(project)"><x-icon :name="project.ready ? 'web_asset' : 'draft'" aria-hidden="true"></x-icon><strong x-text="project.title"></strong><span x-text="project.system"></span><span class="od-state" x-text="project.ready ? 'Ready' : 'Draft'"></span></button>
+    </template></div>
+  </div>
+  <template x-if="$store.openDesign.tab === 'preview' && $store.openDesign.current">
+    <div class="od-preview">
+      <div class="od-preview-bar"><strong x-text="$store.openDesign.current.title"></strong><div class="od-devices" role="group" aria-label="Preview width"><button @click="$store.openDesign.viewport = '100%'" :aria-pressed="$store.openDesign.viewport === '100%'" aria-label="Desktop preview"><x-icon name="desktop_windows"></x-icon></button><button @click="$store.openDesign.viewport = '375px'" :aria-pressed="$store.openDesign.viewport === '375px'" aria-label="Mobile preview"><x-icon name="smartphone"></x-icon></button></div><a class="od-icon" x-show="$store.openDesign.current.ready" :href="$store.openDesign.url($store.openDesign.current, true)" aria-label="Download HTML"><x-icon name="download"></x-icon></a></div>
+      <template x-if="$store.openDesign.current.ready"><div class="od-artboard"><iframe title="Design preview" sandbox="allow-scripts" referrerpolicy="no-referrer" :style="{width: $store.openDesign.viewport}" :src="$store.openDesign.url($store.openDesign.current)"></iframe></div></template>
+      <div class="od-empty" x-show="!$store.openDesign.current.ready"><x-icon name="draft" aria-hidden="true"></x-icon></div>
+      <footer class="od-actions"><button @click="$store.openDesign.refresh()" :disabled="$store.openDesign.busy"><x-icon name="refresh"></x-icon>Refresh</button><button class="od-primary" @click="$store.openDesign.start()" :disabled="$store.openDesign.busy"><x-icon name="chat_bubble"></x-icon>Design with A0</button></footer>
+    </div>
+  </template>
+</section>
+</template>
+</div>
+</body>
+</html>
